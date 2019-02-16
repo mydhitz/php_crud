@@ -1,13 +1,13 @@
 <html>
 <head>
-    <title>Tambah User</title>
+    <title>Add Users</title>
 </head>
 
 <body>
     <a href="index.php">Go to Home</a>
     <br/><br/>
 
-    <form action="tambah.php" method="post" name="form1">
+    <form action="tambah.php" method="post" name="form1" enctype="multipart/form-data">
         <table width="25%" border="0">
             <tr> 
                 <td>Nama</td>
@@ -21,13 +21,17 @@
                 <td>Mobile</td>
                 <td><input type="text" name="mobile"></td>
             </tr>
-			<tr> 
+	    <tr> 
                 <td>Alamat</td>
                 <td><input type="text" name="alamat"></td>
             </tr>
+	    <tr> 
+                <td>Foto</td>
+                <td><input type="file" name="foto"></td>
+            </tr>
             <tr> 
                 <td></td>
-                <td><input type="submit" name="Kirim" value="Tambah"></td>
+                <td><input type="submit" name="kirim" value="Tambah"></td>
             </tr>
         </table>
     </form>
@@ -35,19 +39,32 @@
     <?php
 
     // mengecek saat data dikirim dengan nama variabel dan nama yang ada di database
-    if(isset($_POST['Kirim'])) {
+    if(isset($_POST['kirim'])) {
         $nama = $_POST['nama'];
         $email = $_POST['email'];
         $mobile = $_POST['mobile'];
-		$alamat = $_POST['alamat'];
-
+        $alamat = $_POST['alamat'];
+		
+	$foto = $_FILES['foto']['name']; //variabel $foto yang memiliki nilai foto dan nama foto untuk menyimpan file foto dan nama foto
+		
+	$folderFoto= "gambar";   //$folderfoto merupakan nama variabel yang memiliki nilai yaitu gambar
+	if(!is_dir($folderFoto)) //jiki dalam variabel $folderfoto adalah bukan direktori/folder yang bernama gambar, maka :
+		mkdir($folderFoto);  //mkdir = make dir / make direktori membuat folder baru atau direktori baru yang bernama gambar
+	$fileTujuanFoto = $folderFoto."/".$foto; //penyimpanan gambar dapat dibaca sebagai gambar/file.jpg = gambar(nama folder yg dibuat sebelumnya yaitu menggukanan $folderFoto), dan file.jpg diambil ari variabel $foto
+	//Cek File
+        if (strlen($foto)>0) {
+            //upload Photo
+            if (is_uploaded_file($_FILES['foto']['tmp_name'])) {
+		move_uploaded_file ($_FILES['foto']['tmp_name'], $fileTujuanFoto);
+		}
+        }
+		
         //memanggil file koneksi.php agar dapat terhubung antara database dan file 
         include_once("koneksi.php");
 
         // menambah user data ke database yaitu tabel_user dengan perintah sql
-        $result = mysqli_query($mysqli, "INSERT INTO tabel_user(nama,email,mobile,alamat) VALUES('$nama','$email','$mobile','$alamat')");
+        $result = mysqli_query($mysqli, "INSERT INTO tabel_user(nama,email,mobile,alamat,foto) VALUES ('$nama','$email','$mobile','$alamat','$foto')");
 
-        // menampilkan jika data ser telah ditambahkan
         echo "Biodata user telah ditambahkan, Terimakasih. <a href='index.php'>Lihat Data User</a>";
     }
     ?>
