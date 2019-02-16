@@ -34,3 +34,4 @@ $hasil = mysqli_query($mysqli, "SELECT * FROM tabel_user ORDER BY id DESC");
     ?>
     </table>
 </body>
+</html>
